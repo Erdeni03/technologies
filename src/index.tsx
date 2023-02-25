@@ -2,36 +2,27 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import {
-  createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import {Dashboard} from "./components/Dashboard/Dashboard";
-import ToDo from "./views/ToDo";
+import router from "./router";
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+
+
+const client = new QueryClient()
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Dashboard />,
-    children: [
-      {
-        path: '/to-do',
-        element: <ToDo />
-      },
-    ],
-  },
-])
-
 root.render(
     <React.StrictMode>
+      <QueryClientProvider client={client}>
       <RouterProvider router={router}/>
+      </QueryClientProvider>
     </React.StrictMode>
 );
 
