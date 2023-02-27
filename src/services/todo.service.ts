@@ -22,4 +22,24 @@ export const TodoService = {
     })
     return res.json()
   },
+  async toggleTodoStatus(todoId: number | string, completed: boolean) {
+    const res = await fetch(`${BASE}/${todoId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ completed }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return res.json()
+  },
+  async deleteTodo(todoId: number | string) {
+    const res = await fetch(`${BASE}/${todoId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ todoId }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return res.json()
+  },
 }

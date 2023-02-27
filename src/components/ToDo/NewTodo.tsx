@@ -5,6 +5,7 @@ import { FormEvent, useState } from 'react'
 import uuid from 'react-uuid'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TodoService } from '../../services/todo.service'
+import { Todo } from '../../types/todo.type'
 
 const NewTodo = () => {
   const [post, setPost] = useState({
@@ -17,8 +18,20 @@ const NewTodo = () => {
 
   const { mutate: create } = useMutation({
     mutationFn: TodoService.createTodo,
-    onSuccess: () => {
-      client.invalidateQueries({ queryKey: ['todos', 'all'] })
+    // onSuccess: () => {
+    //   client.invalidateQueries({ queryKey: ['todos', 'all'] })
+    // },
+    onSuccess: (newTodo) => {
+      //  CACHE UPDATE DATA CLIENT - no request to server
+
+      // client.getQueryData(['todos', 'all'])
+      client.setQueriesData<Todo[]>(['todos', 'all'], (oldTodos) => {
+        return [...(oldTodos || []), newTodo]
+      })
+      client.invalidateQueries({
+        queryKey: ['todos', 'all'],
+        refetchType: 'none',
+      })
     },
   })
 

@@ -4,25 +4,19 @@
       "id": 1,
       "title": "Learn React Query",
       "description": "Test Test Test",
-      "completed": false
+      "completed": true
     },
     {
-      "id": 2,
-      "title": "Learn Vue",
-      "description": "Lorem ipsum Lorem ipsum Lorem ipsum",
-      "completed": false
+      "title": "React query",
+      "description": "Testing",
+      "completed": true,
+      "id": "47120b6c-0b92-f7c6-6933-43a675a53360"
     },
     {
-      "title": "test",
-      "description": "test",
+      "title": "TITLE TEXT",
+      "description": "descr",
       "completed": false,
-      "id": "ccbe6918-6135-018b-e25d-63178068bec5"
-    },
-    {
-      "title": "qwert",
-      "description": "qwer",
-      "completed": false,
-      "id": "b6b1db78-d09c-cd1e-b935-c79565645be7"
+      "id": "8c70efca-68ba-09b1-a6db-8b28b4d0be34"
     }
   ]
 }
