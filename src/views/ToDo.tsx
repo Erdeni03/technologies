@@ -1,7 +1,12 @@
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import * as React from 'react'
-import { CircularProgress, Pagination, SelectChangeEvent } from '@mui/material'
+import {
+  Button,
+  CircularProgress,
+  Pagination,
+  SelectChangeEvent,
+} from '@mui/material'
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import Box from '@mui/material/Box'
 import { Todo } from '../types/todo.type'
@@ -9,6 +14,7 @@ import NewTodo from '../components/ToDo/NewTodo'
 import ListTodo from '../components/ToDo/ListTodo'
 import SearchSortTodo from '../components/ToDo/SearchSortTodo'
 import uuid from 'react-uuid'
+import { postsAPI } from '../services/PostService'
 
 const ToDo = () => {
   const [posts, setPosts] = useState<Todo[]>([])
@@ -18,7 +24,10 @@ const ToDo = () => {
   const countPage = 16
   const [search, setSearch] = useState('')
 
-  const deletePost = (id: number | string) => {
+  const [deletePostRequest] = postsAPI.useDeletePostMutation()
+
+  const deletePost = async (id: number | string) => {
+    await deletePostRequest(id)
     setPosts(posts.filter((post) => post.id !== id))
   }
 
@@ -40,7 +49,10 @@ const ToDo = () => {
     setSearch(e.target.value)
   }
 
-  const completePost = (id: string | number, completed: boolean) => {
+  const [updatePost] = postsAPI.useUpdateCompletePostMutation()
+  const completePost = async (id: string | number, completed: boolean) => {
+    await updatePost({ id, completed })
+
     setPosts((prevState) =>
       prevState.map((post) => {
         if (post.id === id) {
@@ -70,7 +82,7 @@ const ToDo = () => {
         if (event.target.value === 'title') {
           return a.title.localeCompare(b.title)
         } else {
-          return a.description.localeCompare(b.description)
+          return a.body.localeCompare(b.body)
         }
       })
     )
@@ -80,6 +92,23 @@ const ToDo = () => {
     setSearchedPosts(posts)
   }, [posts])
 
+  // const dispatch = useAppDispatch()
+  // const { postsToolkit, isLoading, error } = useAppSelector(
+  //     (state) => state.postsReducer
+  // )
+  //
+  // useEffect(() => {
+  //   dispatch(fetchPosts())
+  // }, [])
+
+  const {
+    data: postsToolkitQuery,
+    isLoading,
+    error,
+    refetch,
+  } = postsAPI.useFetchAllPostsQuery(20)
+  // refetch - обновление данных
+  // pollingInterval - промежуток времени на авт обновление данных
   return (
     <Grid container spacing={2}>
       <Grid item xs={2.5}>
@@ -104,11 +133,24 @@ const ToDo = () => {
             width: '100%',
           }}
         >
-          <ListTodo
-            deletePost={deletePost}
-            todos={paginatedPosts}
-            completePost={completePost}
-          />
+          {/*{isLoading && <h1>LOADING POSTS</h1>}*/}
+          {/*{error && <h1>{error}</h1>}*/}
+          {/*<ListTodo*/}
+          {/*  deletePost={deletePost}*/}
+          {/*  todos={postsToolkit}*/}
+          {/*  completePost={completePost}*/}
+          {/*/>*/}
+          {isLoading && <h1>LOADING POSTS</h1>}
+          {error && <h1>ERROR</h1>}
+          <Button onClick={() => refetch()}>REFETCH</Button>
+          {postsToolkitQuery && (
+            <ListTodo
+              deletePost={deletePost}
+              todos={postsToolkitQuery}
+              completePost={completePost}
+            />
+          )}
+
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Pagination
               onChange={changePage}

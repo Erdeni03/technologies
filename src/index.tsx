@@ -9,10 +9,10 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import router from "./router";
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {Provider} from "react-redux";
+import {setupStore} from "./store/store";
 
-
-const client = new QueryClient()
+const store = setupStore()
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -20,9 +20,9 @@ const root = ReactDOM.createRoot(
 
 root.render(
     <React.StrictMode>
-      <QueryClientProvider client={client}>
+      <Provider store={store}>
       <RouterProvider router={router}/>
-      </QueryClientProvider>
+      </Provider>
     </React.StrictMode>
 );
 

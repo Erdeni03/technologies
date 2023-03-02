@@ -3,6 +3,8 @@ import Paper from '@mui/material/Paper'
 import * as React from 'react'
 import { FC, FormEvent, useState } from 'react'
 import { Todo } from '../../types/todo.type'
+import { postsAPI } from '../../services/PostService'
+import uuid from 'react-uuid'
 
 type PropsType = {
   newPost: (post: Omit<Todo, 'id'>) => void,
@@ -11,15 +13,18 @@ type PropsType = {
 const NewTodo: FC<PropsType> = ({ newPost }) => {
   const [post, setPost] = useState({
     title: '',
-    description: '',
+    body: '',
     completed: false,
   })
 
-  const onSubmit = (e: FormEvent) => {
+  const [createPost, {error, isLoading}] = postsAPI.useCreatePostMutation()
+
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (post.title !== '' && post.description !== '') {
-      newPost(post)
-      setPost({ title: '', description: '', completed: false })
+    if (post.title !== '' && post.body !== '') {
+      // newPost(post)
+      await createPost({ ...post, id: uuid() } as Todo)
+      setPost({ title: '', body: '', completed: false })
     }
   }
 
@@ -44,8 +49,8 @@ const NewTodo: FC<PropsType> = ({ newPost }) => {
       />
       <TextField
         required
-        value={post.description}
-        onChange={(e) => setPost({ ...post, description: e.target.value })}
+        value={post.body}
+        onChange={(e) => setPost({ ...post, body: e.target.value })}
         label="Description"
         variant="standard"
       />

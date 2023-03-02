@@ -40,7 +40,7 @@ const ListTodo: FC<PropsType> = ({ deletePost, todos, completePost }) => {
                 gutterBottom
                 sx={{ wordWrap: 'break-word' }}
               >
-                {post.description}
+                {post.body}
               </Typography>
             </CardContent>
             <CardActions
@@ -54,7 +54,7 @@ const ListTodo: FC<PropsType> = ({ deletePost, todos, completePost }) => {
                 Delete
               </Button>
               <Checkbox
-                checked={post.completed}
+                checked={post?.completed}
                 onChange={() => completePost(post.id, post.completed)}
               />
             </CardActions>
