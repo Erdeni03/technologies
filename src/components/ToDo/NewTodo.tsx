@@ -1,32 +1,24 @@
 import { Button, TextField } from '@mui/material'
 import Paper from '@mui/material/Paper'
 import * as React from 'react'
-import { FormEvent, useState } from 'react'
-import uuid from 'react-uuid'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { TodoService } from '../../services/todo.service'
+import { FC, FormEvent, useState } from 'react'
+import { Todo } from '../../types/todo.type'
 
-const NewTodo = () => {
+type PropsType = {
+  newPost: (post: Omit<Todo, 'id'>) => void,
+}
+
+const NewTodo: FC<PropsType> = ({ newPost }) => {
   const [post, setPost] = useState({
     title: '',
     description: '',
     completed: false,
   })
 
-  const client = useQueryClient()
-
-  const { mutate: create } = useMutation({
-    mutationFn: TodoService.createTodo,
-    onSuccess: () => {
-      client.invalidateQueries({ queryKey: ['todos', 'all'] })
-    },
-  })
-
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (post.title !== '' && post.description !== '') {
-      // setPosts((prevVal) => [...prevVal, { id: uuid(), ...post }])
-      create({ ...post, id: uuid() })
+      newPost(post)
       setPost({ title: '', description: '', completed: false })
     }
   }
