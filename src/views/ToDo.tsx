@@ -1,22 +1,16 @@
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import * as React from 'react'
-import { CircularProgress, Pagination, SelectChangeEvent } from '@mui/material'
+import { Pagination, SelectChangeEvent } from '@mui/material'
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import Box from '@mui/material/Box'
 import { Todo } from '../types/todo.type'
-import { useQuery } from '@tanstack/react-query'
-import { TodoService } from '../services/todo.service'
 import NewTodo from '../components/ToDo/NewTodo'
 import ListTodo from '../components/ToDo/ListTodo'
 import SearchSortTodo from '../components/ToDo/SearchSortTodo'
+import uuid from 'react-uuid'
 
 const ToDo = () => {
-  const { data, isLoading, isSuccess } = useQuery({
-    queryFn: () => TodoService.fetchTodos('all'),
-    queryKey: ['todos', 'all'],
-  })
-
   const [posts, setPosts] = useState<Todo[]>([])
   const [searchedPosts, setSearchedPosts] = useState<Todo[]>(posts)
 
@@ -26,6 +20,10 @@ const ToDo = () => {
 
   const deletePost = (id: number | string) => {
     setPosts(posts.filter((post) => post.id !== id))
+  }
+
+  const newPost = (post: Omit<Todo, 'id'>) => {
+    setPosts((prevVal) => [...prevVal, { id: uuid(), ...post }])
   }
 
   const pages = useMemo(() => Math.ceil(posts.length / countPage), [posts])
@@ -43,14 +41,14 @@ const ToDo = () => {
   }
 
   const completePost = (id: string | number, completed: boolean) => {
-    // setPosts((prevState) =>
-    //   prevState.map((post) => {
-    //     if (post.id === id) {
-    //       return { ...post, completed: !completed }
-    //     }
-    //     return post
-    //   })
-    // )
+    setPosts((prevState) =>
+      prevState.map((post) => {
+        if (post.id === id) {
+          return { ...post, completed: !completed }
+        }
+        return post
+      })
+    )
   }
 
   const [sortPosts, setSortPosts] = useState('')
@@ -85,7 +83,7 @@ const ToDo = () => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={2.5}>
-        <NewTodo />
+        <NewTodo newPost={newPost} />
         <SearchSortTodo
           sortPosts={sortPosts}
           search={search}
@@ -106,36 +104,30 @@ const ToDo = () => {
             width: '100%',
           }}
         >
-          {isLoading ? (
-            <Box
-              sx={{
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <CircularProgress />
-            </Box>
-          ) : (
-            isSuccess && (
-              <>
-                <ListTodo
-                  deletePost={deletePost}
-                  todos={data}
-                  completePost={completePost}
-                />
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <Pagination
-                    onChange={changePage}
-                    count={pages}
-                    page={page}
-                    color="primary"
-                  />
-                </Box>
-              </>
-            )
-          )}
+          {/*<Box*/}
+          {/*  sx={{*/}
+          {/*    height: '100%',*/}
+          {/*    display: 'flex',*/}
+          {/*    justifyContent: 'center',*/}
+          {/*    alignItems: 'center',*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <CircularProgress />*/}
+          {/*</Box>*/}
+
+          <ListTodo
+            deletePost={deletePost}
+            todos={paginatedPosts}
+            completePost={completePost}
+          />
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              onChange={changePage}
+              count={pages}
+              page={page}
+              color="primary"
+            />
+          </Box>
         </Paper>
       </Grid>
     </Grid>
