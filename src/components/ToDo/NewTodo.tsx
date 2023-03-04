@@ -3,6 +3,8 @@ import Paper from '@mui/material/Paper'
 import * as React from 'react'
 import { FC, FormEvent, useState } from 'react'
 import { Todo } from '../../types/todo.type'
+import { useMutation } from '@apollo/client'
+import { ADD_TODO, ALL_TODO } from '../../apollo/todos'
 
 type PropsType = {
   newPost: (post: Omit<Todo, 'id'>) => void,
@@ -14,13 +16,40 @@ const NewTodo: FC<PropsType> = ({ newPost }) => {
     description: '',
     completed: false,
   })
+  const [addTodo, { error }] = useMutation(ADD_TODO, {
+    // refetchQueries: [
+    //   {
+    //     query: ALL_TODO,
+    //   },
+    // ],
+    update(cache, { data: { newTodo } }) {
+      const { todos }: any = cache.readQuery({ query: ALL_TODO })
+
+      cache.writeQuery({
+        query: ALL_TODO,
+        data: {
+          todos: [newTodo, ...todos],
+        },
+      })
+    },
+  })
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (post.title !== '' && post.description !== '') {
-      newPost(post)
+      addTodo({
+        variables: {
+          title: post.title,
+          completed: false,
+          userId: 123,
+        },
+      })
       setPost({ title: '', description: '', completed: false })
     }
+  }
+
+  if (error) {
+    return <h2>ERror....</h2>
   }
 
   return (

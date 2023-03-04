@@ -9,10 +9,9 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import router from "./router";
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {ApolloProvider} from "@apollo/client";
+import client from './apollo/client'
 
-
-const client = new QueryClient()
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -20,9 +19,9 @@ const root = ReactDOM.createRoot(
 
 root.render(
     <React.StrictMode>
-      <QueryClientProvider client={client}>
+      <ApolloProvider client={client}>
       <RouterProvider router={router}/>
-      </QueryClientProvider>
+      </ApolloProvider>
     </React.StrictMode>
 );
 
